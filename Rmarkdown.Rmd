@@ -16,12 +16,15 @@ unzip(zipfile = "Activity_monitoring_data.zip")
 read activity data and create sum data to sum_step
 ```{r}
 activity <- read.csv("activity.csv")
-summary(activity)
-head(activity, 20)
 sum_step <- aggregate(steps ~ date, data = activity, sum, na.rm = TRUE)
 ```
 make histogram 
 ```{r}
 hst <- qplot(steps, data = sum_step, main = "Total Number of Steps taken each day")
 hst
+```
+mean and median step taken each day
+```{r}
+mean(sum_step$steps, na.rm = TRUE)
+median(sum_step$steps, nna.rm = TRUE)
 ```
