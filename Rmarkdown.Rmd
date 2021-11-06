@@ -20,11 +20,52 @@ sum_step <- aggregate(steps ~ date, data = activity, sum, na.rm = TRUE)
 ```
 make histogram 
 ```{r}
-hst <- qplot(steps, data = sum_step, main = "Total Number of Steps taken each day")
+hst <- qplot(steps, data = sum_step, main = "Total Number of Steps taken each day", bins = 10)
 hst
 ```
-mean and median step taken each day
+Calculate Mean and Median number of step taken each day
 ```{r}
 mean(sum_step$steps, na.rm = TRUE)
 median(sum_step$steps, nna.rm = TRUE)
+```
+Time series plot of the average number of steps taken
+```{r}
+time_order <- aggregate(steps ~ interval, data = activity, mean, na.rm = TRUE)
+qplot(interval,steps, data = time_order, main = "Time series plot of the average number of steps taken", xlab = "Interval", geom = "line")
+
+```
+
+The 5-minute interval that, on average, contains the maximum number of steps
+```{r}
+time_order$interval[max(time_order$steps)]
+time_order$interval[is.na(time_order$steps)]
+```
+# Imputing mising values
+1.Calculate and report the total number of missing values in the dataset
+```{r}
+nrow(is.na(activity))
+```
+
+2.Devise a strategy for filling in all of the missing values in the dataset.
+replace NA value in steps into mean corresponding to same interval
+```{r}
+#time_order contains only one row per day but activity has multiple rows
+#[time_order$interval] could be 0 and cause error!!
+for (i in 1:length(activity$steps)) {if(is.na(activity$steps[i])) {
+        if (activity$interval[i] != 0){
+    activity$steps[i] <-        time_order$steps[time_order$interval[activity$interval[i]]]
+        }
+        else {activity$steps[i] <- 0}
+}
+}
+```
+3.Create a new dataset that is equal to the original dataset but with the missing data filled in.
+```{r}
+new_data <- activity
+```
+
+4.Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
+```{r}
+new_hist <- aggregate(steps ~ date, data = new_data, sum)
+qplot(steps, data = new_hist)
 ```
