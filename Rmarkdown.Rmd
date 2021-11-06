@@ -32,7 +32,7 @@ Time series plot of the average number of steps taken
 ```{r}
 time_order <- aggregate(steps ~ interval, data = activity, mean, na.rm = TRUE)
 qplot(interval,steps, data = time_order, main = "Time series plot of the average number of steps taken", xlab = "Interval", geom = "line")
-
+head(time_order)
 ```
 
 The 5-minute interval that, on average, contains the maximum number of steps
@@ -55,7 +55,7 @@ for (i in 1:length(activity$steps)) {if(is.na(activity$steps[i])) {
         if (activity$interval[i] != 0){
     activity$steps[i] <-        time_order$steps[time_order$interval[activity$interval[i]]]
         }
-        else {activity$steps[i] <- 0}
+        else {activity$steps[i] <- time_order$steps[1]}
 }
 }
 ```
@@ -67,5 +67,5 @@ new_data <- activity
 4.Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
 ```{r}
 new_hist <- aggregate(steps ~ date, data = new_data, sum)
-qplot(steps, data = new_hist)
+qplot(steps, data = new_hist, bins = 10)
 ```
