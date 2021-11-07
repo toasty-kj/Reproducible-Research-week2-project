@@ -10,6 +10,8 @@ download zip file and unzip them
 library(ggplot2)
 library(lubridate)
 library(dplyr)
+library(lattice)
+Sys.setlocale(category = "LC_TIME", "C")
 Sys.setenv("LANGUAGE"="e")
 path <- getwd()
 url <- "https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip"
@@ -67,6 +69,7 @@ head(activity, 20)
 3.Create a new dataset that is equal to the original dataset but with the missing data filled in.
 ```{r}
 new_data <- activity
+head(new_data, 20)
 ```
 
 4.Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day
@@ -79,14 +82,25 @@ mean(new_hist$steps)
 median(new_hist$steps)
 ```
 #Are there differences in activity patterns between weekdays and weekends?
+
 1.Create a new factor variable in the dataset with two levels – “weekday” and “weekend” indicating whether a given date is a weekday or weekend day.
 
 ```{r}
+names(new_data)
 new_data$date <- ymd(new_data$date)
-new_data <- mutate(new_data, daytype = weekdays(new_data$date))
-head(new_data, 20)
+new_data$date <- weekdays(new_data$date)
+
+for (i in 1:length(new_data$date)){if (new_data$date[i] == "Saturday" || new_data$date[i] == "Sunday")
+        new_data$daytype[i] <- "Weekend"
+else new_data$daytype[i] <- "Weekday"
+}
+new <- aggregate(steps ~ interval + daytype, data =new_data, mean)
 
 ```
 
 2.Make a panel plot containing a time series plot (i.e.type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). See the README file in the GitHub repository to see an example of what this plot should look like using simulated data.
+```{r}
 
+xyplot(steps ~ interval| daytype, data = new, type = "l", layout = c(1,2))
+
+```
